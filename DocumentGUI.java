@@ -52,7 +52,7 @@ public class DocumentGUI extends JPanel implements ActionListener
     ImageIcon qMarkIcon = new ImageIcon("Pictures/QuestionMark.png", "QuestionMark");
     Highlighter highlighter;
     HighlightPainter painter =  new DefaultHighlighter.DefaultHighlightPainter(Color.CYAN);
-    public static void main(String[] args) {
+    public static void main() {
         DocumentGUI dGUI = new DocumentGUI();
         dGUI.createGUI();
     }
