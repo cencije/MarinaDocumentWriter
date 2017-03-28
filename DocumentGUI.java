@@ -1,11 +1,11 @@
 import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.Color;
+import java.awt.BorderLayout;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-import javax.swing.plaf.LayerUI;
-import javax.swing.text.JTextComponent;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
@@ -24,7 +24,7 @@ public class DocumentGUI extends JPanel implements ActionListener
     JFrame mainFrame;
 
     JLabel lblDocName, topBarColor, dummyLabel;
-    JButton btnNewDocument, btnSaveFile, btnLoadFile, btnSearchFile, btnClear;
+    JButton btnNewDocument, btnSaveFile, btnLoadFile, btnSearchFile, btnClear, btnCount;
     JTextField tfDocumentName, tfWord;
     JTextArea tfDocumentArea;
     JScrollPane documentPane;
@@ -74,44 +74,50 @@ public class DocumentGUI extends JPanel implements ActionListener
         mainFrame.setResizable(false);
         mainFrame.setIconImage(iconImage.getImage());
         mainFrame.setTitle("Document Writer");
-        
-        btnNewDocument = new JButton("New Document");
-        btnNewDocument.setBounds(1,1,130,30);
+
+        btnNewDocument = new JButton("New");
+        btnNewDocument.setBounds(1,1,60,30);
         btnNewDocument.addActionListener(this);
         mainFrame.add(btnNewDocument);
 
         btnSaveFile = new JButton("Save File");
-        btnSaveFile.setBounds(131,1,80,30);
+        btnSaveFile.setBounds(52,1,80,30);
         btnSaveFile.addActionListener(this);
         mainFrame.add(btnSaveFile);
 
         btnLoadFile = new JButton("Load File");
-        btnLoadFile.setBounds(212,1,80,30);
+        btnLoadFile.setBounds(126,1,80,30);
         btnLoadFile.addActionListener(this);
         mainFrame.add(btnLoadFile);
 
-        btnSearchFile = new JButton("Search Word");
-        btnSearchFile.setBounds(285, 1, 110, 30);
+        btnSearchFile = new JButton("Search File");
+        btnSearchFile.setBounds(199, 1, 95, 30);
         btnSearchFile.addActionListener(this);
         mainFrame.add(btnSearchFile);
 
         tfWord = new JTextField("", 30);
-        tfWord.setBounds(390, 1, 50, 30);
+        tfWord.setBounds(295, 1, 50, 30);
         tfWord.setEditable(false);
         mainFrame.add(tfWord);
 
         btnClear = new JButton("Clean");
-        btnClear.setBounds(440,1,60,30);
+        btnClear.setBounds(342,1,60,30);
         btnClear.addActionListener(this);
         btnClear.setEnabled(false);
         mainFrame.add(btnClear);
-        
+
+        btnCount = new JButton("Word Count");
+        btnCount.setBounds(394,1,100,30);
+        btnCount.addActionListener(this);
+        btnCount.setEnabled(true);
+        mainFrame.add(btnCount);
+
         lblDocName = new JLabel("<HTML><B>Document Name:</B></HTML>");
-        lblDocName.setBounds(10, 35, 120, 30);
+        lblDocName.setBounds(10, 36, 120, 30);
         mainFrame.add(lblDocName);
 
         tfDocumentName = new JTextField("", 40);
-        tfDocumentName.setBounds(130, 35, 360, 30);
+        tfDocumentName.setBounds(130, 36, 360, 30);
         tfDocumentName.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
         mainFrame.add(tfDocumentName);
 
@@ -130,17 +136,14 @@ public class DocumentGUI extends JPanel implements ActionListener
         topBarColor.setBounds(0, 0, 510, 35);
         topBarColor.setOpaque(true);
         mainFrame.add(topBarColor);
-        
+
         dummyLabel = new JLabel("");
         mainFrame.add(dummyLabel);
 
-        
         mainFrame.setVisible(true);
-
     }
-
     public void actionPerformed(ActionEvent evt) {
-        if (evt.getActionCommand().equals("New Document")) {
+        if (evt.getActionCommand().equals("New")) {
             if (!tfDocumentName.getText().trim().isEmpty() || !tfDocumentArea.getText().trim().isEmpty()) {
                 Object[] options = {"Yes", "No", "Cancel"};
                 int changes = JOptionPane.showOptionDialog(mainFrame,
@@ -223,7 +226,7 @@ public class DocumentGUI extends JPanel implements ActionListener
                 } 
             }
         }
-        if(evt.getActionCommand().equals("Search Word")) {
+        if(evt.getActionCommand().equals("Search File")) {
             if (!tfDocumentArea.getText().trim().isEmpty()) {
                 String searchTerm = JOptionPane.showInputDialog(mainFrame, "Type token to search for:");
                 if (searchTerm == null) {}
@@ -243,8 +246,8 @@ public class DocumentGUI extends JPanel implements ActionListener
                                 String word = lineScanner.next();
                                 if (wordSize == 0) wordSize += word.length();
                                 else wordSize += word.length() + 1;
-                                if (word.equals(searchTerm) || word.equals(searchTerm + ".") ||  word.equals(searchTerm + "?") || 
-                                    word.equals(searchTerm + "!") || word.equals(searchTerm + ",")) {
+                                if (word.equals(searchTerm) || word.equals(searchTerm + '.') ||  word.equals(searchTerm + "?") || 
+                                word.equals(searchTerm + "!")) {
                                     int start = tfDocumentArea.getText().indexOf(word);
                                     indices.add(start);
                                     int wordLength = start + searchTerm.length();
@@ -262,6 +265,19 @@ public class DocumentGUI extends JPanel implements ActionListener
                     }
                 }
             }
+        }
+        if (evt.getActionCommand().equals("Word Count")) {
+            scanner = new Scanner(tfDocumentArea.getText());
+            int counter = 0;
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                Scanner lineScanner = new Scanner(line);
+                while (lineScanner.hasNext()) {
+                    lineScanner.next();
+                    counter++;
+                }
+            }
+            tfWord.setText(Integer.toString(counter));
         }
         if(evt.getActionCommand().equals("Clean")) {
             highlighter.removeAllHighlights();
